@@ -7,7 +7,12 @@ public class Latest {
 	private ArrayList<News> news;
 	private boolean is_today;
 	private ArrayList<Top_Story> top_stories;
-
+	
+	public Latest() {
+		news = new ArrayList<News>();
+		top_stories = new ArrayList<Top_Story>();
+	}
+	
 	public String getDate() {
 		return date;
 	}

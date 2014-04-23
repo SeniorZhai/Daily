@@ -7,6 +7,7 @@ import org.json.JSONTokener;
 import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 
 import com.zoe.daily.model.Latest;
 import com.zoe.daily.model.News;
@@ -17,8 +18,8 @@ public class LatestTask extends AsyncTask<String, Integer, Void> {
 	private NetUtil netUtil;
 	private Latest latest;
 	private Handler handler;
-	public LatestTask(Latest latest,Handler handler) {
-		super();
+
+	public LatestTask(Latest latest, Handler handler) {
 		this.latest = latest;
 		this.handler = handler;
 		netUtil = new NetUtil();
@@ -27,16 +28,17 @@ public class LatestTask extends AsyncTask<String, Integer, Void> {
 	@Override
 	protected Void doInBackground(String... params) {
 		String str = netUtil.getString(params[0]);
+		Log.d(TAG, str);
 		try {
 			JSONTokener jsonTokener = new JSONTokener(str);
 			JSONObject data = (JSONObject) jsonTokener.nextValue();
 			JSONArray array = data.getJSONArray("news");
 			for (int i = 0; i < array.length(); i++) {
-				
+
 				JSONObject obj = (JSONObject) array.get(i);
-				
+
 				News news = new News();
-				
+
 				news.setTitle(obj.getString("title"));
 
 				news.setImage(obj.getString("image"));
@@ -47,15 +49,23 @@ public class LatestTask extends AsyncTask<String, Integer, Void> {
 
 				news.setUrl(obj.getString("url"));
 
-				latest.getNews().add(news);
-				Message message = Message.obtain();
-				message.what = 0x1234;
-				handler.sendMessage(message);
-			}
-		} catch (Exception e) {
+//				latest.getNews().add(news);
 
+			}
+		
+		} catch (Exception e) {
+			Log.d(TAG, e.getMessage());
+			return null;
 		}
 		return null;
+	}
+	@Override
+	protected void onPostExecute(Void result) {
+		Message message = Message.obtain();
+		
+		message.what = 0x1234;
+		
+		handler.sendMessage(message);
 	}
 
 }
